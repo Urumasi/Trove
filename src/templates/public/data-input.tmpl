@@ -1,0 +1,160 @@
+{% from "macros/fields.tmpl" import render_input_field, render_submit %}
+{% extends "shared/layout.tmpl" %}
+
+{% block title %}Nova tabulka{% endblock %}
+
+{% block scripts %}
+<script>
+    function dlt(id){
+        a = confirm("Jsi si jistý?");
+        if(a)
+            window.location = "/data-delete/"+id;
+    }
+    function arch(){
+        var ids = [];
+        for(var i=0; i<{{ data|length }}; i++){
+            c = document.getElementById('cb'+i);
+            if(c.checked)
+                ids.push(parseInt(c.getAttribute('datarowid')));
+        }
+        if(ids.length==0)
+            return;
+        a = confirm("Opravdu chceš archivovat těchto "+ids.length+" řádků?");
+        if(a){
+            cm = prompt("Komentář:\nNepoužívej znak /");
+            window.location = "/data-archive/"+cm+"/"+JSON.stringify(ids);
+        }
+    }
+    function tgl(c){
+        for(var i=0; i<{{ data|length }}; i++)
+            document.getElementById('cb'+i).checked = c;
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+    <h1>Dropy</h1>
+    <table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+    <td>Datum</td>
+        <td>Flux</td>
+        <td>Eye</td>
+        <td>Cache</td>
+        <td>Chest</td>
+        <td>Twice</td>
+        <td>Thrice</td>
+        <td>Quad</td>
+        <td>Penta</td>
+        <td>Poznámky</td>
+        <td>Celková hodnota</td>
+        <td></td>
+        <td><a href="javascript:arch()">Archiv</a><br><input type="checkbox" onchange="tgl(this.checked)">Vše</td>
+        </tr>
+       <tr>
+        <form method="POST" id='insert-form'>
+        {{ form.hidden_tag() }}
+        <td></td>
+        <td>{{ render_input_field(form.flux) }}</td>
+        <td>{{ render_input_field(form.eye) }}</td>
+        <td>{{ render_input_field(form.cache) }}</td>
+        <td>{{ render_input_field(form.chest) }}</td>
+        <td>{{ render_input_field(form.twice) }}</td>
+        <td>{{ render_input_field(form.thrice) }}</td>
+        <td>{{ render_input_field(form.quad) }}</td>
+        <td>{{ render_input_field(form.penta) }}</td>
+        <td>{{ render_input_field(form.comment) }}</td>
+        <td><a href="/ceny-input">Změnit</a><br></td>
+        <td>{{ render_submit('btn btn-info" value="Vložit') }}</td>
+        <td></td>
+        </form>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for i, n in enumerate(data) %}
+        <tr>
+        <td></td>
+        <td>{{ n.flux or "-" }}</td>
+        <td>{{ n.eye or "-" }}</td>
+        <td>{{ n.cache or "-" }}</td>
+        <td>{{ n.chest or "-" }}</td>
+        <td>{{ n.twice or "-" }}</td>
+        <td>{{ n.thrice or "-" }}</td>
+        <td>{{ n.quad or "-" }}</td>
+        <td>{{ n.penta or "-" }}</td>
+        <td>{{ n.comment }}</td>
+        <td>{{ ceny[i] }}</td>
+        <td><a href="javascript:dlt({{ n.id }})">Smazat</a></td>
+        <td><input type="checkbox" id="cb{{ i }}" datarowid={{n.id}}></td>
+        </tr>
+    {% endfor %}
+    <tr class="active">
+        <td></td>
+        <td>{{ sums.flux }}</td>
+        <td>{{ sums.eye }}</td>
+        <td>{{ sums.cache }}</td>
+        <td>{{ sums.chest }}</td>
+        <td>{{ sums.twice }}</td>
+        <td>{{ sums.thrice  }}</td>
+        <td>{{ sums.quad }}</td>
+        <td>{{ sums.penta }}</td>
+        <td>-</td>
+        <td>{{ sums.all }}</td>
+        <td></td>
+        <td></td>
+    </tr>
+    </tbody>
+    </table>
+
+    <h1>Archivováno</h1>
+
+    <table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+    <td>Datum</td>
+        <td>Flux</td>
+        <td>Eye</td>
+        <td>Cache</td>
+        <td>Chest</td>
+        <td>Twice</td>
+        <td>Thrice</td>
+        <td>Quad</td>
+        <td>Penta</td>
+        <td>Poznámky</td>
+        <td>Celková hodnota</td>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for i, n in enumerate(archived) %}
+        <tr>
+        <td></td>
+        <td>{{ n.flux or "-" }}</td>
+        <td>{{ n.eye or "-" }}</td>
+        <td>{{ n.cache or "-" }}</td>
+        <td>{{ n.chest or "-" }}</td>
+        <td>{{ n.twice or "-" }}</td>
+        <td>{{ n.thrice or "-" }}</td>
+        <td>{{ n.quad or "-" }}</td>
+        <td>{{ n.penta or "-" }}</td>
+        <td>{{ n.comment }}</td>
+        <td>{{ cenya[i] }}</td>
+        </tr>
+    {% endfor %}
+    <tr class="active">
+        <td></td>
+        <td>{{ sumsa.flux }}</td>
+        <td>{{ sumsa.eye }}</td>
+        <td>{{ sumsa.cache }}</td>
+        <td>{{ sumsa.chest }}</td>
+        <td>{{ sumsa.twice }}</td>
+        <td>{{ sumsa.thrice  }}</td>
+        <td>{{ sumsa.quad }}</td>
+        <td>{{ sumsa.penta }}</td>
+        <td>-</td>
+        <td>{{ sumsa.all }}</td>
+    </tr>
+    </tbody>
+    </table>
+{% endblock %}

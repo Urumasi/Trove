@@ -1,0 +1,60 @@
+{% from "macros/fields.tmpl" import render_input_field, render_submit %}
+{% extends "shared/layout.tmpl" %}
+
+{% block title %}Nova tabulka{% endblock %}
+
+{% block scripts %}
+<script>
+    function dlt(id){
+        a = confirm("Jsi si jistý?");
+        if(a){
+            window.location = "/ceny-delete/"+id
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+
+ <table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <td>Eye</td>
+        <td>Cache</td>
+        <td>Chest</td>
+        <td>Twice</td>
+        <td>Thrice</td>
+        <td>Quad</td>
+        <td>Penta</td>
+        <td></td>
+        </tr>
+       <tr>
+        <form method="POST" id='insert-form'>
+        {{ form.hidden_tag() }}
+        <td>{{ render_input_field(form.eye) }}</td>
+        <td>{{ render_input_field(form.cache) }}</td>
+        <td>{{ render_input_field(form.chest) }}</td>
+        <td>{{ render_input_field(form.twice) }}</td>
+        <td>{{ render_input_field(form.thrice) }}</td>
+        <td>{{ render_input_field(form.quad) }}</td>
+        <td>{{ render_input_field(form.penta) }}</td>
+        <td>{{ render_submit('btn btn-info" value="Vložit') }}</td>
+        </form>
+        </tr>
+    </thead>
+   <tbody>
+    {% for i, n in enumerate(data) %}
+        <tr {% if i==num-1 %}class="info"{% endif %}>
+        <td>{{ n.eye }}</td>
+        <td>{{ n.cache }}</td>
+        <td>{{ n.chest }}</td>
+        <td>{{ n.twice }}</td>
+        <td>{{ n.thrice }}</td>
+        <td>{{ n.quad }}</td>
+        <td>{{ n.penta }}</td>
+        <td><a href="javascript:dlt({{ n.id }})">Smazat</a> <a href="/ceny-pouzit/{{ n.id }};{{ n.eye }};{{ n.cache }};{{ n.chest }};{{ n.twice }};{{ n.thrice }};{{ n.quad }};{{ n.penta }}">Použít</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% endblock %}
